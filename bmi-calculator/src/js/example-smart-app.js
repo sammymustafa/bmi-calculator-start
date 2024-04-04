@@ -14,7 +14,7 @@
                 var patient = smart.patient;
                 var pt = patient.read();
                 var obv = smart.patient.api.fetchAll({
-                    type: /* [Insert FHIR resource type here] */,
+                    type: Observation,
                     query: {
                         code: {
                             $or: [
