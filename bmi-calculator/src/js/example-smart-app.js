@@ -66,13 +66,13 @@
 
                     // Height
                     p.height = getQuantityValueAndUnit(height[0]);
-                    p.height = JSON.stringify(height[0]) // Delete this line when instructed
+                    // p.height = JSON.stringify(height[0]) // Delete this line when instructed
 
                     // Weight
                     p.weight = getQuantityValueAndUnit(weight[0]);
 
                     // Calculate BMI
-                    // p.bmi = (getQuantityValue(weight[0]) / (Math.pow((getQuantityValue(height[0]) / 100), 2))).toFixed(1);
+                    p.bmi = (getQuantityValue(weight[0]) / (Math.pow((getQuantityValue(height[0]) / 100), 2))).toFixed(1);
 
                     ret.resolve(p);
 
