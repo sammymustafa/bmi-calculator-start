@@ -52,8 +52,8 @@
                     }
 
                     // Create arrays of JSON objects
-                    var height = byCodes('8302-2', '3137-7', /* [Copy/paste remaining LOINC codes for height here] */);
-                    var weight = byCodes('29463-7', '3141-9', /* [Copy/paste remaining LOINC codes for weight here] */);
+                    var height = byCodes('8302-2', '3137-7', '3138-5', '8308-9', '8306-3', '8301-4');
+                    var weight = byCodes('29463-7', '3141-9', '18833-4', '3142-7', '75292-3', '8335-2', '8351-9');
 
                     // Set default patient object
                     var p = defaultPatient();
