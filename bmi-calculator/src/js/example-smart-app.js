@@ -14,7 +14,7 @@
                 var patient = smart.patient;
                 var pt = patient.read();
                 var obv = smart.patient.api.fetchAll({
-                    type: Observation,
+                    type: 'Observation',
                     query: {
                         code: {
                             $or: [
