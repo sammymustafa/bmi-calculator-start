@@ -31,19 +31,19 @@
                                 'http://loinc.org|3142-7',     // Weight [stated]
                                 'http://loinc.org|75292-3',    // Weight [usual]
                                 'http://loinc.org|8335-2',     // Weight [estimated]
-                                'http://loinc.org|8351-9',     // Weight [without clothes]
-
-                                'http://loinc.org|75323-6',     // Condition
-                                'http://loinc.org|75322-8',     // Complaint
-                                'http://loinc.org|75325-1',     // Symptom
+                                'http://loinc.org|8351-9'      // Weight [without clothes]
                             ]
                         }
                     }
                 });
+                var cond = smart.patient.api.fetchAll({
+                    type: 'Condition',
+                    query: {}
+                })
 
-                $.when(pt, obv).fail(onError);
+                $.when(pt, obv, cond).fail(onError);
 
-                $.when(pt, obv).done(function (patient, obv) {
+                $.when(pt, obv, cond).done(function (patient, obv, cond) {
 
                     var byCodes = smart.byCodes(obv, 'code');
                     var gender = patient.gender;
@@ -58,7 +58,6 @@
                     // Create arrays of JSON objects
                     var height = byCodes('8302-2', '3137-7', '3138-5', '8308-9', '8306-3', '8301-4');
                     var weight = byCodes('29463-7', '3141-9', '18833-4', '3142-7', '75292-3', '8335-2', '8351-9');
-                    var condition = byCodes('75323-6', '75322-8', '75325-1');
 
                     // Set default patient object
                     var p = defaultPatient();
@@ -76,11 +75,11 @@
                     // Weight
                     p.weight = getQuantityValueAndUnit(weight[0]);
 
-                    // Condition
-                    p.condition = condition
-
                     // Calculate BMI
                     p.bmi = (getQuantityValue(weight[0]) / (Math.pow((getQuantityValue(height[0]) / 100), 2))).toFixed(1);
+
+                    // Condition
+                    p.condition = cond
 
                     ret.resolve(p);
 
