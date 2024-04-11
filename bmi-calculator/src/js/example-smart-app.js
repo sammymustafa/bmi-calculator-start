@@ -43,12 +43,15 @@
 
                 $.when(pt, obv, cond).fail(onError);
 
-                $.when(pt, obv, cond).done(function (patient, obv, cond) {
+                $.when(pt, obv, cond).done(function (patient, obv, conditions) {
 
                     var byCodes = smart.byCodes(obv, 'code');
                     var gender = patient.gender;
                     var fname = '';
                     var lname = '';
+                    var city = patient.address[0].city;
+                    var state = patient.address[0].state;
+                    var country = patient.address[0].country;
 
                     if (typeof patient.name[0] !== 'undefined') {
                         fname = patient.name[0].given.join(' ');
@@ -65,6 +68,9 @@
                     // Patient demographics
                     p.birthdate = patient.birthDate;
                     p.gender = gender;
+                    p.city = city;
+                    p.state = state;
+                    p.country = country;
                     p.fname = fname;
                     p.lname = lname;
 
@@ -78,9 +84,51 @@
                     // Calculate BMI
                     p.bmi = (getQuantityValue(weight[0]) / (Math.pow((getQuantityValue(height[0]) / 100), 2))).toFixed(1);
 
-                    // Condition
-                    p.condition = cond
+                    // 
 
+                    // Condition
+                    p.condition = null;
+                    p.other = null;
+                    if (conditions && conditions.length > 0) {
+                        // Create an array to hold all SNOMED CT coding entries
+                        var allSnomedCodings = [];
+
+                        // Collect all SNOMED CT coding entries from each condition
+                        conditions.forEach(function(condition) {
+                            if (condition.code && condition.code.coding) {
+                                condition.code.coding.forEach(function(coding) {
+                                    if (coding.system === "http://snomed.info/sct") {
+                                        allSnomedCodings.push(coding);
+                                    }
+                                });
+                            }
+                        });
+
+                        // Sort the coding entries by the length of their display name
+                        allSnomedCodings.sort(function(a, b) {
+                            return a.display.length - b.display.length || a.display.localeCompare(b.display);
+                        });
+
+                        // Now assign the SNOMED code with the shortest display name to p.condition
+                        // and the next shortest to p.other
+                        if (allSnomedCodings.length > 0) {
+                            p.condition = allSnomedCodings[0].display;
+                            console.log("Condition with shortest display name:", p.condition);
+                        }
+
+                        if (allSnomedCodings.length > 1) {
+                            p.other = allSnomedCodings[1].display;
+                            console.log("Second condition with shortest display name:", p.other);
+                        }
+                    }
+
+                    // Make sure to output a message if no codes were found
+                    if (!p.condition) {
+                        console.log("No SNOMED codes found for 'condition' variable.");
+                    }
+                    if (!p.other) {
+                        console.log("No additional SNOMED codes found for 'other' variable.");
+                    }
                     ret.resolve(p);
 
                 });
@@ -104,7 +152,11 @@
             height: { value: '' },
             weight: { value: '' },
             condition: { value: '' },
+            other: {value: ''},
             bmi: { value: '' },
+            city: { value: '' },
+            state: { value: '' },
+            country: { value: '' }
         };
     }
 
@@ -148,7 +200,11 @@
         $('#height').html(p.height);
         $('#weight').html(p.weight);
         $('#condition').html(p.condition);
+        $('#other').html(p.other);
         $('#bmi').html(p.bmi);
+        $('#city').html(p.city);
+        $('#state').html(p.state);
+        $('#country').html(p.country);
     };
 
 })(window);
